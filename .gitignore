@@ -1,0 +1,23 @@
+# Ambiente virtual
+venv/
+env/
+
+# Banco de dados
+*.sqlite3
+db.sqlite3
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração sensíveis
+*.log

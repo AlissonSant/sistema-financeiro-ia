@@ -130,3 +130,9 @@ ALLOWED_HOSTS = ['*']
 # Servir arquivos estáticos em produção
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Configurações de segurança para CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-10330.up.railway.app',
+    'https://*.railway.app',
+]

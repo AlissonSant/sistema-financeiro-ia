@@ -1,0 +1,1 @@
+web: python manage.py migrate && gunicorn financeiro_project.wsgi --bind 0.0.0.0:$PORT

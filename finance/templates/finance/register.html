@@ -1,0 +1,341 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Cadastro - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 500px;
+        margin: 30px auto;
+        background: white;
+        padding: 50px 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .auth-title {
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .auth-subtitle {
+        color: #666;
+        font-size: 1.1em;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 1em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-control.error {
+        border-color: #dc3545;
+        background: #fff5f5;
+    }
+    
+    .form-errors {
+        margin-top: 8px;
+    }
+    
+    .form-error {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+    
+    .form-help {
+        font-size: 0.85em;
+        color: #666;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+    
+    .btn-register {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .auth-divider {
+        text-align: center;
+        margin: 30px 0;
+        position: relative;
+        color: #666;
+    }
+    
+    .auth-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e1e5e9;
+    }
+    
+    .auth-divider span {
+        background: white;
+        padding: 0 20px;
+    }
+    
+    .auth-links {
+        text-align: center;
+        margin-top: 25px;
+    }
+    
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    .benefits-section {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border-left: 4px solid #28a745;
+    }
+    
+    .benefits-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .benefits-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .benefits-list li {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .benefits-list li::before {
+        content: '✅';
+        position: absolute;
+        left: 0;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .auth-container {
+            margin: 20px;
+            padding: 30px 20px;
+        }
+        
+        .auth-title {
+            font-size: 2em;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+        }
+        
+        .btn-register {
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-header">
+        <h1 class="auth-title">📝 Criar Conta</h1>
+        <p class="auth-subtitle">Comece a organizar suas finanças hoje mesmo</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                    👤 {{ form.first_name.label }}
+                </label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                <div class="form-errors">
+                    {% for error in form.first_name.errors %}
+                    <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="form-label">
+                    🏷️ {{ form.username.label }}
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div class="form-errors">
+                    {% for error in form.username.errors %}
+                    <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-help">
+                    Nome único para seu login. Use apenas letras, números e _ @ + . -
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="{{ form.email.id_for_label }}" class="form-label">
+                📧 {{ form.email.label }}
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="form-errors">
+                {% for error in form.email.errors %}
+                <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}" class="form-label">
+                    🔑 {{ form.password1.label }}
+                </label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                <div class="form-errors">
+                    {% for error in form.password1.errors %}
+                    <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}" class="form-label">
+                    🔒 {{ form.password2.label }}
+                </label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                <div class="form-errors">
+                    {% for error in form.password2.errors %}
+                    <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-register">
+            🚀 Criar Minha Conta
+        </button>
+    </form>
+    
+    <div class="auth-divider">
+        <span>ou</span>
+    </div>
+    
+    <div class="auth-links">
+        <p>Já tem uma conta?</p>
+        <a href="{% url 'login' %}" class="auth-link">
+            🔐 Fazer login
+        </a>
+    </div>
+    
+    <div class="benefits-section">
+        <div class="benefits-title">
+            🎉 O que você ganha:
+        </div>
+        <ul class="benefits-list">
+            <li>Controle completo das suas finanças</li>
+            <li>Gráficos e relatórios automáticos</li>
+            <li>Análises inteligentes com IA</li>
+            <li>Acesso em qualquer dispositivo</li>
+            <li>100% gratuito e seguro</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Voltar para página inicial -->
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{% url 'index' %}" style="color: white; text-decoration: none; opacity: 0.8;">
+        ← Voltar para página inicial
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,269 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Bem-vindo - Sistema Financeiro com IA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        text-align: center;
+        padding: 80px 20px;
+        color: white;
+    }
+    
+    .hero-title {
+        font-size: 3.5em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3em;
+        margin-bottom: 40px;
+        opacity: 0.9;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 60px 0;
+    }
+    
+    .feature-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .feature-icon {
+        font-size: 3em;
+        margin-bottom: 20px;
+        display: block;
+    }
+    
+    .feature-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .feature-description {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .cta-section {
+        text-align: center;
+        margin: 60px 0;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 15px 40px;
+        margin: 10px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+        transform: translateY(-3px);
+    }
+    
+    .stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin: 80px 0;
+        text-align: center;
+    }
+    
+    .stat-item {
+        color: white;
+    }
+    
+    .stat-number {
+        font-size: 3em;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .stat-label {
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5em;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1em;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+            margin: 40px 0;
+        }
+        
+        .feature-card {
+            padding: 30px 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            margin: 5px;
+            display: block;
+            max-width: 300px;
+            margin: 10px auto;
+        }
+        
+        .stats-section {
+            grid-template-columns: repeat(2, 1fr);
+            margin: 40px 0;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="hero-title">🏦 Sistema Financeiro com IA</h1>
+    <p class="hero-subtitle">
+        Controle suas finanças de forma inteligente e tome decisões melhores sobre seu dinheiro
+    </p>
+    
+    <div class="cta-section">
+        <a href="{% url 'register' %}" class="btn btn-primary">
+            🚀 Começar Agora - É Grátis!
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-secondary">
+            🔐 Já tenho conta
+        </a>
+    </div>
+</div>
+
+<div class="features-grid">
+    <div class="feature-card">
+        <span class="feature-icon">💰</span>
+        <h3 class="feature-title">Controle Total</h3>
+        <p class="feature-description">
+            Gerencie todas suas receitas e despesas em um só lugar. 
+            Categorize e acompanhe seus gastos em tempo real.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3 class="feature-title">Análise Inteligente</h3>
+        <p class="feature-description">
+            Visualize seus dados com gráficos interativos e 
+            receba insights automáticos sobre seus hábitos financeiros.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">🤖</span>
+        <h3 class="feature-title">IA Financeira</h3>
+        <p class="feature-description">
+            Nossa inteligência artificial analisa seus dados e 
+            oferece sugestões personalizadas para economizar mais.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <h3 class="feature-title">100% Seguro</h3>
+        <p class="feature-description">
+            Seus dados financeiros são criptografados e protegidos. 
+            Privacidade e segurança são nossas prioridades.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">📱</span>
+        <h3 class="feature-title">Multi-dispositivo</h3>
+        <p class="feature-description">
+            Acesse de qualquer lugar: computador, tablet ou celular. 
+            Seus dados sincronizados em tempo real.
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3 class="feature-title">Rápido e Fácil</h3>
+        <p class="feature-description">
+            Interface intuitiva e rápida. Adicione transações 
+            em segundos e tenha relatórios instantâneos.
+        </p>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Gratuito</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">🚀</span>
+        <span class="stat-label">Setup Instantâneo</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">∞</span>
+        <span class="stat-label">Transações Ilimitadas</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">24/7</span>
+        <span class="stat-label">Acesso Total</span>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2 style="color: white; margin-bottom: 30px;">
+        Comece a organizar suas finanças hoje mesmo!
+    </h2>
+    <a href="{% url 'register' %}" class="btn btn-primary">
+        💳 Criar Conta Grátis
+    </a>
+</div>
+{% endblock %}

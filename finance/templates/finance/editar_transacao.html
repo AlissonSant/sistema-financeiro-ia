@@ -1,0 +1,257 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Editar Transação - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+    
+    .edit-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .edit-header h2 {
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .edit-header p {
+        color: #666;
+        font-size: 1.1em;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 1.1em;
+        transition: border-color 0.3s ease;
+        background: #f8f9ff;
+        color: #333;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        min-width: 150px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .transaction-info {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        border-left: 5px solid #667eea;
+    }
+    
+    .transaction-info h4 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+    
+    .transaction-detail {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: #666;
+    }
+    
+    .transaction-detail strong {
+        color: #333;
+    }
+    
+    /* TEMA ESCURO */
+    body.dark-theme .edit-container {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .edit-header h2,
+    body.dark-theme .form-group label,
+    body.dark-theme .transaction-info h4 {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .edit-header p {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .form-control {
+        background: #3a3a52 !important;
+        border-color: #4a4a65 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .form-control:focus {
+        background: #4a4a65 !important;
+        border-color: #667eea !important;
+    }
+    
+    body.dark-theme .transaction-info {
+        background: #3a3a52 !important;
+        border-left-color: #667eea !important;
+    }
+    
+    body.dark-theme .transaction-detail {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .transaction-detail strong {
+        color: #e0e0e0 !important;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .edit-container {
+            margin: 0 10px;
+            padding: 25px 20px;
+        }
+        
+        .edit-header h2 {
+            font-size: 1.5em;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <div class="edit-header">
+        <h2>✏️ Editar Transação</h2>
+        <p>Modifique os dados da sua transação</p>
+    </div>
+    
+    <!-- Informações atuais -->
+    <div class="transaction-info">
+        <h4>📋 Dados Atuais</h4>
+        <div class="transaction-detail">
+            <span>Descrição:</span>
+            <strong>{{ transacao.descricao }}</strong>
+        </div>
+        <div class="transaction-detail">
+            <span>Valor:</span>
+            <strong>R$ {{ transacao.valor|floatformat:2 }}</strong>
+        </div>
+        <div class="transaction-detail">
+            <span>Tipo:</span>
+            <strong>{{ transacao.get_tipo_display }}</strong>
+        </div>
+        <div class="transaction-detail">
+            <span>Categoria:</span>
+            <strong>{{ transacao.get_categoria_display }}</strong>
+        </div>
+        <div class="transaction-detail">
+            <span>Data:</span>
+            <strong>{{ transacao.data|date:"d/m/Y H:i" }}</strong>
+        </div>
+    </div>
+    
+    <!-- Formulário de edição -->
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+            {{ form.descricao }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.valor.id_for_label }}">{{ form.valor.label }}</label>
+            {{ form.valor }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>
+            {{ form.tipo }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+            {{ form.categoria }}
+        </div>
+        
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                ✅ Salvar Alterações
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                ❌ Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Login - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 50px auto;
+        background: white;
+        padding: 50px 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .auth-title {
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .auth-subtitle {
+        color: #666;
+        font-size: 1.1em;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 1em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-login {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .auth-divider {
+        text-align: center;
+        margin: 30px 0;
+        position: relative;
+        color: #666;
+    }
+    
+    .auth-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e1e5e9;
+    }
+    
+    .auth-divider span {
+        background: white;
+        padding: 0 20px;
+    }
+    
+    .auth-links {
+        text-align: center;
+        margin-top: 25px;
+    }
+    
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    .demo-section {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .demo-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .demo-info {
+        color: #666;
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .auth-container {
+            margin: 20px;
+            padding: 30px 20px;
+        }
+        
+        .auth-title {
+            font-size: 2em;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+        }
+        
+        .btn-login {
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-header">
+        <h1 class="auth-title">🔐 Entrar</h1>
+        <p class="auth-subtitle">Acesse sua conta e gerencie suas finanças</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="username" class="form-label">👤 Nome de usuário</label>
+            <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                class="form-control" 
+                placeholder="Digite seu nome de usuário"
+                required
+                autofocus
+            >
+        </div>
+        
+        <div class="form-group">
+            <label for="password" class="form-label">🔑 Senha</label>
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                class="form-control" 
+                placeholder="Digite sua senha"
+                required
+            >
+        </div>
+        
+        <button type="submit" class="btn-login">
+            🚀 Entrar no Sistema
+        </button>
+    </form>
+    
+    <div class="auth-divider">
+        <span>ou</span>
+    </div>
+    
+    <div class="auth-links">
+        <p>Ainda não tem uma conta?</p>
+        <a href="{% url 'register' %}" class="auth-link">
+            📝 Criar conta gratuita
+        </a>
+    </div>
+    
+    <div class="demo-section">
+        <div class="demo-title">
+            💡 Dica
+        </div>
+        <div class="demo-info">
+            Crie sua conta em segundos e comece a organizar suas finanças imediatamente. 
+            É 100% gratuito e seguro!
+        </div>
+    </div>
+</div>
+
+<!-- Voltar para página inicial -->
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{% url 'index' %}" style="color: white; text-decoration: none; opacity: 0.8;">
+        ← Voltar para página inicial
+    </a>
+</div>
+{% endblock %}

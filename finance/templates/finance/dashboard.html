@@ -1,0 +1,503 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Dashboard - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .welcome-message {
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .dashboard-subtitle {
+        color: #666;
+        font-size: 1.1em;
+    }
+    
+    /* NOVA SEÇÃO - FORMULÁRIO */
+    .nova-transacao {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .form-header h3 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+    
+    .form-header p {
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+    }
+    
+    .form-control {
+        padding: 12px 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: border-color 0.3s ease;
+        background: #f8f9ff;
+        color: #333;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* DASHBOARD DE TOTAIS */
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .card-receitas {
+        border-left: 5px solid #4caf50;
+    }
+    
+    .card-despesas {
+        border-left: 5px solid #f44336;
+    }
+    
+    .card-saldo {
+        border-left: 5px solid #2196f3;
+    }
+    
+    .card h3 {
+        color: #666;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+    }
+    
+    .card .valor {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .receitas { color: #4caf50; }
+    .despesas { color: #f44336; }
+    .saldo { color: #2196f3; }
+    .saldo.negativo { color: #f44336; }
+    
+    /* TRANSAÇÕES */
+    .transacoes {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .transacoes-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.3em;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .transacao-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 30px;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s ease;
+    }
+    
+    .transacao-item:hover {
+        background-color: #f8f9ff;
+    }
+    
+    .transacao-item:last-child {
+        border-bottom: none;
+    }
+    
+    .transacao-info {
+        flex: 1;
+    }
+    
+    .transacao-descricao {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .transacao-detalhes {
+        font-size: 0.9em;
+        color: #666;
+    }
+    
+    .transacao-valor {
+        font-size: 1.2em;
+        font-weight: bold;
+        padding: 8px 15px;
+        border-radius: 20px;
+        margin-right: 10px;
+    }
+    
+    .valor-receita {
+        background: #e8f5e8;
+        color: #2d5f2d;
+    }
+    
+    .valor-despesa {
+        background: #ffeaea;
+        color: #d32f2f;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 30px;
+        color: #666;
+    }
+    
+    .empty-state h3 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    /* BOTÕES DE AÇÃO */
+    .transacao-acoes {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-acao {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-editar {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-editar:hover {
+        background: #45a049;
+        transform: translateY(-1px);
+    }
+    
+    .btn-excluir {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-excluir:hover {
+        background: #da190b;
+        transform: translateY(-1px);
+    }
+    
+    /* 🌙 TEMA ESCURO CORRIGIDO */
+    body.dark-theme .dashboard-header,
+    body.dark-theme .nova-transacao,
+    body.dark-theme .card,
+    body.dark-theme .transacoes {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    /* Textos no modo escuro */
+    body.dark-theme .welcome-message,
+    body.dark-theme .form-header h3,
+    body.dark-theme .transacao-descricao,
+    body.dark-theme .empty-state h3 {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .dashboard-subtitle,
+    body.dark-theme .form-header p,
+    body.dark-theme .form-group label,
+    body.dark-theme .card h3,
+    body.dark-theme .transacao-detalhes,
+    body.dark-theme .empty-state p {
+        color: #b0b0b0 !important;
+    }
+    
+    /* Formulários no modo escuro */
+    body.dark-theme .form-control {
+        background: #3a3a52 !important;
+        border-color: #4a4a65 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .form-control:focus {
+        background: #4a4a65 !important;
+        border-color: #667eea !important;
+    }
+    
+    body.dark-theme .transacao-item {
+        border-bottom-color: #4a4a65 !important;
+    }
+    
+    body.dark-theme .transacao-item:hover {
+        background-color: #3a3a52 !important;
+    }
+    
+    body.dark-theme .transacoes-header {
+        background: linear-gradient(135deg, #4a4a65 0%, #5a5a7a 100%) !important;
+    }
+    
+    /* Valores no modo escuro */
+    body.dark-theme .valor-receita {
+        background: #1b4332 !important;
+        color: #4caf50 !important;
+    }
+    
+    body.dark-theme .valor-despesa {
+        background: #4a1414 !important;
+        color: #f44336 !important;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 20px 15px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message {
+            font-size: 1.5em;
+        }
+        
+        .nova-transacao {
+            padding: 20px 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .dashboard {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            padding: 20px 15px;
+        }
+        
+        .card .valor {
+            font-size: 1.5em;
+        }
+        
+        .transacoes-header {
+            padding: 15px 20px;
+            font-size: 1.1em;
+        }
+        
+        .transacao-item {
+            padding: 15px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .transacao-valor {
+            align-self: flex-end;
+            font-size: 1.1em;
+        }
+        
+        .btn-submit {
+            padding: 12px 30px;
+            font-size: 1em;
+            max-width: 100%;
+        }
+        
+        .transacao-acoes {
+            align-self: flex-end;
+            margin-top: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1 class="welcome-message">
+        Olá, {{ user.first_name|default:user.username }}! 👋
+    </h1>
+    <p class="dashboard-subtitle">
+        Gerencie suas finanças de forma inteligente
+    </p>
+</div>
+
+<!-- NOVA TRANSAÇÃO -->
+<div class="nova-transacao">
+    <div class="form-header">
+        <h3>💰 Nova Transação</h3>
+        <p>Adicione suas receitas e despesas rapidamente</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+                {{ form.descricao }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.valor.id_for_label }}">{{ form.valor.label }}</label>
+                {{ form.valor }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>
+                {{ form.tipo }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+                {{ form.categoria }}
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-submit">
+            ✅ Adicionar Transação
+        </button>
+    </form>
+</div>
+
+<!-- DASHBOARD DE TOTAIS -->
+<div class="dashboard">
+    <div class="card card-receitas">
+        <h3>💰 Total Receitas</h3>
+        <div class="valor receitas">R$ {{ receitas|floatformat:2 }}</div>
+    </div>
+    
+    <div class="card card-despesas">
+        <h3>💸 Total Despesas</h3>
+        <div class="valor despesas">R$ {{ despesas|floatformat:2 }}</div>
+    </div>
+    
+    <div class="card card-saldo">
+        <h3>💳 Saldo Atual</h3>
+        <div class="valor saldo {% if saldo < 0 %}negativo{% endif %}">
+            R$ {{ saldo|floatformat:2 }}
+        </div>
+    </div>
+</div>
+
+<!-- LISTA DE TRANSAÇÕES -->
+<div class="transacoes">
+    <div class="transacoes-header">
+        <span>📊 Suas Transações</span>
+        <span>{{ transacoes|length }} transação{{ transacoes|length|pluralize:"ões" }}</span>
+    </div>
+    
+    {% if transacoes %}
+        {% for transacao in transacoes %}
+        <div class="transacao-item">
+            <div class="transacao-info">
+                <div class="transacao-descricao">
+                    {{ transacao.descricao }}
+                </div>
+                <div class="transacao-detalhes">
+                    {{ transacao.get_categoria_display }} • {{ transacao.data|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+            <div class="transacao-valor valor-{{ transacao.tipo }}">
+                {% if transacao.tipo == 'receita' %}+{% else %}-{% endif %}
+                R$ {{ transacao.valor|floatformat:2 }}
+            </div>
+            <div class="transacao-acoes">
+                <a href="{% url 'editar_transacao' transacao.id %}" class="btn-acao btn-editar">✏️ Editar</a>
+                <a href="{% url 'excluir_transacao' transacao.id %}" class="btn-acao btn-excluir">🗑️ Excluir</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>🌟 Comece agora!</h3>
+            <p>Adicione sua primeira transação usando o formulário acima!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

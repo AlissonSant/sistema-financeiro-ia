@@ -21,4 +21,5 @@ urlpatterns = [
     path('metas/<int:meta_id>/editar/', views.editar_meta, name='editar_meta'),
     path('metas/<int:meta_id>/pausar/', views.pausar_meta, name='pausar_meta'),
     path('metas/<int:meta_id>/excluir/', views.excluir_meta, name='excluir_meta'),
+    path('relatorio/pdf/', views.gerar_relatorio_pdf, name='relatorio_pdf'),
 ]

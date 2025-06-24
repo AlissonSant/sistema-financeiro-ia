@@ -137,8 +137,8 @@ class MetaFinanceira(models.Model):
         self.valor_atual += valor
         if self.valor_atual >= self.valor_objetivo:
             self.status = 'concluida'
-            from django.utils import timezone
-            self.data_conclusao = timezone.now()
+            from decimal import Decimal
+            self.valor_atual += Decimal(str(valor))
             # Adicionar conquista
             if 'primeira_meta' not in self.conquistas:
                 self.conquistas.append('primeira_meta')

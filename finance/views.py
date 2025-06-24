@@ -12,6 +12,8 @@ from .models import Transacao, MetaFinanceira
 from .forms import TransacaoForm, CustomUserCreationForm, MetaFinanceiraForm
 from .insights import FinancialInsights  # Se você tem este arquivo
 from .alerts import AlertasInteligentes  # 🆕 NOVO IMPORT
+from .reports import RelatorioFinanceiro 
+
 
 def index(request):
     """Página inicial"""
@@ -208,10 +210,11 @@ def detalhes_meta(request, meta_id):
         valor = request.POST.get('valor')
         if valor:
             try:
-                valor = float(valor)
-                if valor > 0:
-                    meta.adicionar_progresso(valor)
-                    messages.success(request, f'💰 R$ {valor:.2f} adicionado ao progresso!')
+                from decimal import Decimal
+                valor_decimal = Decimal(str(valor))
+                if valor_decimal > 0:
+                    meta.adicionar_progresso(valor_decimal)
+                    messages.success(request, f'💰 R$ {valor_decimal:.2f} adicionado ao progresso!')
                     return redirect('detalhes_meta', meta_id=meta.id)
             except ValueError:
                 messages.error(request, 'Valor inválido!')
@@ -301,3 +304,10 @@ def alertas_view(request):
     }
     
     return render(request, 'finance/alertas.html', context)
+
+# 🚀 Gerar relatório financeiro em PDF
+@login_required
+def gerar_relatorio_pdf(request):
+    """Gerar relatório financeiro em PDF"""
+    gerador = RelatorioFinanceiro(request.user)
+    return gerador.gerar_relatorio_completo()

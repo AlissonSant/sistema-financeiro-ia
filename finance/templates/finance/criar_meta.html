@@ -1,0 +1,445 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}{{ titulo }} - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .criar-meta-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .meta-header {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .meta-title {
+        font-size: 2.2em;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .meta-subtitle {
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    
+    .form-container {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    
+    .form-control {
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #4caf50;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+    
+    .form-control[type="date"] {
+        cursor: pointer;
+    }
+    
+    .help-text {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 5px;
+        font-style: italic;
+    }
+    
+    /* DICAS INTELIGENTES */
+    .dicas-container {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        border-left: 5px solid #2196f3;
+    }
+    
+    .dicas-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .dica-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding: 10px;
+        background: rgba(255,255,255,0.5);
+        border-radius: 8px;
+    }
+    
+    .dica-icon {
+        font-size: 1.2em;
+        margin-top: 2px;
+    }
+    
+    .dica-text {
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    /* BOTÕES */
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        transition: all 0.3s ease;
+        min-width: 150px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* PREVIEW DA META */
+    .meta-preview {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 30px;
+        text-align: center;
+    }
+    
+    .preview-title {
+        font-size: 1.3em;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+    
+    .preview-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .preview-item {
+        text-align: center;
+    }
+    
+    .preview-valor {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    
+    .preview-label {
+        font-size: 0.9em;
+        opacity: 0.9;
+    }
+    
+    /* TEMA ESCURO */
+    body.dark-theme .form-container,
+    body.dark-theme .dicas-container {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .meta-title,
+    body.dark-theme .dicas-title,
+    body.dark-theme .form-group label {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .dica-text,
+    body.dark-theme .help-text {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .form-control {
+        background: #3a3a52 !important;
+        border-color: #4a4a65 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .form-control:focus {
+        background: #4a4a65 !important;
+        border-color: #4caf50 !important;
+    }
+    
+    body.dark-theme .dica-item {
+        background: rgba(255,255,255,0.1) !important;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .criar-meta-container {
+            margin: 0 10px;
+        }
+        
+        .form-container {
+            padding: 25px 20px;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            min-width: 100%;
+        }
+        
+        .meta-header {
+            padding: 25px 20px;
+        }
+        
+        .meta-title {
+            font-size: 1.8em;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="criar-meta-container">
+    <!-- HEADER -->
+    <div class="meta-header">
+        <h1 class="meta-title">
+            {% if meta %}
+                ✏️ Editar Meta
+            {% else %}
+                🎯 Nova Meta Financeira
+            {% endif %}
+        </h1>
+        <p class="meta-subtitle">
+            {% if meta %}
+                Atualize os dados da sua meta
+            {% else %}
+                Defina seu objetivo e vamos te ajudar a alcançá-lo!
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- DICAS INTELIGENTES -->
+    {% if not meta %}
+    <div class="dicas-container">
+        <h3 class="dicas-title">
+            <span>💡</span>
+            Dicas para uma Meta Eficaz
+        </h3>
+        
+        <div class="dica-item">
+            <span class="dica-icon">🎯</span>
+            <span class="dica-text">
+                <strong>Seja específico:</strong> "Economizar R$ 5.000 para viagem" é melhor que "economizar dinheiro"
+            </span>
+        </div>
+        
+        <div class="dica-item">
+            <span class="dica-icon">📅</span>
+            <span class="dica-text">
+                <strong>Defina prazo realista:</strong> Metas com prazo entre 3-12 meses têm maior chance de sucesso
+            </span>
+        </div>
+        
+        <div class="dica-item">
+            <span class="dica-icon">📊</span>
+            <span class="dica-text">
+                <strong>Valor alcançável:</strong> Comece com valores que representem 10-20% da sua renda mensal
+            </span>
+        </div>
+        
+        <div class="dica-item">
+            <span class="dica-icon">🤖</span>
+            <span class="dica-text">
+                <strong>Nossa IA vai ajudar:</strong> Acompanhe insights e sugestões personalizadas para sua meta
+            </span>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- FORMULÁRIO -->
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>
+                    {{ form.titulo }}
+                    <div class="help-text">{{ form.titulo.help_text }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>
+                    {{ form.tipo }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.valor_objetivo.id_for_label }}">{{ form.valor_objetivo.label }}</label>
+                    {{ form.valor_objetivo }}
+                    <div class="help-text">{{ form.valor_objetivo.help_text }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.data_prazo.id_for_label }}">{{ form.data_prazo.label }}</label>
+                    {{ form.data_prazo }}
+                    <div class="help-text">{{ form.data_prazo.help_text }}</div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+                    {{ form.descricao }}
+                    <div class="help-text">{{ form.descricao.help_text }}</div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    {% if meta %}
+                        ✅ Atualizar Meta
+                    {% else %}
+                        🎯 Criar Meta
+                    {% endif %}
+                </button>
+                <a href="{% url 'metas_dashboard' %}" class="btn btn-secondary">
+                    ❌ Cancelar
+                </a>
+            </div>
+        </form>
+        
+        <!-- PREVIEW DA META -->
+        {% if not meta %}
+        <div class="meta-preview" style="display: none;" id="metaPreview">
+            <h4 class="preview-title">📋 Preview da sua Meta</h4>
+            <div class="preview-info">
+                <div class="preview-item">
+                    <div class="preview-valor" id="previewValor">R$ 0,00</div>
+                    <div class="preview-label">Valor Objetivo</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-valor" id="previewPrazo">-- dias</div>
+                    <div class="preview-label">Prazo</div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-valor" id="previewMensal">R$ 0,00</div>
+                    <div class="preview-label">Sugestão Mensal</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- SCRIPT PARA PREVIEW -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const valorInput = document.getElementById('{{ form.valor_objetivo.id_for_label }}');
+    const prazoInput = document.getElementById('{{ form.data_prazo.id_for_label }}');
+    const preview = document.getElementById('metaPreview');
+    
+    if (valorInput && prazoInput && preview) {
+        function updatePreview() {
+            const valor = parseFloat(valorInput.value) || 0;
+            const prazoDate = new Date(prazoInput.value);
+            const hoje = new Date();
+            
+            if (valor > 0 && prazoDate > hoje) {
+                const diasRestantes = Math.ceil((prazoDate - hoje) / (1000 * 60 * 60 * 24));
+                const mesesRestantes = Math.max(1, diasRestantes / 30);
+                const sugestaoMensal = valor / mesesRestantes;
+                
+                document.getElementById('previewValor').textContent = 
+                    'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('previewPrazo').textContent = diasRestantes + ' dias';
+                document.getElementById('previewMensal').textContent = 
+                    'R$ ' + sugestaoMensal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        valorInput.addEventListener('input', updatePreview);
+        prazoInput.addEventListener('change', updatePreview);
+    }
+});
+</script>
+{% endblock %}

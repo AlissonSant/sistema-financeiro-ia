@@ -1,0 +1,585 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}{{ meta.titulo }} - Detalhes da Meta{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detalhes-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* HEADER DA META */
+    .meta-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .meta-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .meta-titulo-hero {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .meta-descricao-hero {
+        font-size: 1.2em;
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+    
+    .meta-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-top: 25px;
+    }
+    
+    .info-item {
+        text-align: center;
+    }
+    
+    .info-valor {
+        font-size: 1.8em;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .info-label {
+        font-size: 0.9em;
+        opacity: 0.8;
+    }
+    
+    /* PROGRESSO CIRCULAR */
+    .progress-section {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .progress-circle {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 30px;
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring__circle {
+        stroke: #e6e6e6;
+        stroke-width: 12;
+        fill: transparent;
+    }
+    
+    .progress-ring__progress {
+        stroke: #4caf50;
+        stroke-width: 12;
+        fill: transparent;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.5s ease;
+    }
+    
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    
+    .progress-percentage {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .progress-label {
+        font-size: 0.9em;
+        color: #666;
+    }
+    
+    .progress-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .detail-card {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    
+    .detail-valor {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .detail-label {
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    /* INSIGHTS DA IA */
+    .insights-section {
+        margin-bottom: 30px;
+    }
+    
+    .insights-header {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 15px 15px 0 0;
+        font-size: 1.3em;
+        font-weight: bold;
+    }
+    
+    .insights-content {
+        background: white;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .insight-item {
+        padding: 25px 30px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .insight-item:last-child {
+        border-bottom: none;
+    }
+    
+    .insight-icon {
+        font-size: 2em;
+        flex-shrink: 0;
+    }
+    
+    .insight-content {
+        flex: 1;
+    }
+    
+    .insight-titulo {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
+    .insight-descricao {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 5px;
+    }
+    
+    /* ADICIONAR PROGRESSO */
+    .adicionar-progresso {
+        background: white;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .progresso-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .progresso-titulo {
+        font-size: 1.8em;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .progresso-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 20px;
+        align-items: end;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    
+    .form-control {
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #4caf50;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+    
+    .btn-adicionar {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: fit-content;
+    }
+    
+    .btn-adicionar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+    }
+    
+    /* AÇÕES DA META */
+    .meta-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    
+    .btn-action {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1em;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-editar {
+        background: #2196f3;
+        color: white;
+    }
+    
+    .btn-pausar {
+        background: #ff9800;
+        color: white;
+    }
+    
+    .btn-excluir {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-voltar {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* STATUS BADGES */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    .status-success { background: #e8f5e8; color: #2d5f2d; }
+    .status-warning { background: #fff8e1; color: #f57c00; }
+    .status-danger { background: #ffebee; color: #c62828; }
+    .status-info { background: #e3f2fd; color: #1565c0; }
+    
+    /* TEMA ESCURO */
+    body.dark-theme .progress-section,
+    body.dark-theme .adicionar-progresso,
+    body.dark-theme .insights-content {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .meta-titulo-hero,
+    body.dark-theme .progresso-titulo,
+    body.dark-theme .insight-titulo,
+    body.dark-theme .form-group label,
+    body.dark-theme .progress-percentage,
+    body.dark-theme .detail-valor {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .progress-label,
+    body.dark-theme .detail-label,
+    body.dark-theme .insight-descricao {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .form-control {
+        background: #3a3a52 !important;
+        border-color: #4a4a65 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .form-control:focus {
+        background: #4a4a65 !important;
+        border-color: #4caf50 !important;
+    }
+    
+    body.dark-theme .detail-card {
+        background: #3a3a52 !important;
+    }
+    
+    body.dark-theme .insight-item {
+        border-bottom-color: #4a4a65 !important;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .detalhes-container {
+            margin: 0 10px;
+        }
+        
+        .meta-hero {
+            padding: 25px 20px;
+        }
+        
+        .meta-titulo-hero {
+            font-size: 1.8em;
+        }
+        
+        .meta-info-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .progress-section,
+        .adicionar-progresso {
+            padding: 25px 20px;
+        }
+        
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .progress-percentage {
+            font-size: 2em;
+        }
+        
+        .progresso-form {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .meta-actions {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .insight-item {
+            padding: 20px;
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detalhes-container">
+    <!-- HERO SECTION -->
+    <div class="meta-hero">
+        <div class="hero-content">
+            <h1 class="meta-titulo-hero">{{ meta.titulo }}</h1>
+            {% if meta.descricao %}
+            <p class="meta-descricao-hero">{{ meta.descricao }}</p>
+            {% endif %}
+            
+            <div class="status-badge status-{{ status_progresso.cor }}">
+                {{ status_progresso.icone }} {{ meta.get_status_display }}
+            </div>
+            
+            <div class="meta-info-grid">
+                <div class="info-item">
+                    <div class="info-valor">{{ meta.get_tipo_display }}</div>
+                    <div class="info-label">Tipo de Meta</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-valor">{{ meta.dias_restantes }}</div>
+                    <div class="info-label">Dias Restantes</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-valor">R$ {{ meta.valor_diario_necessario|floatformat:2 }}</div>
+                    <div class="info-label">Por Dia</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-valor">{{ meta.data_prazo|date:"d/m/Y" }}</div>
+                    <div class="info-label">Data Limite</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PROGRESSO VISUAL -->
+    <div class="progress-section">
+        <div class="progress-circle">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring__circle" 
+                        stroke-width="12" 
+                        fill="transparent" 
+                        r="88" 
+                        cx="100" 
+                        cy="100"/>
+                <circle class="progress-ring__progress" 
+                        stroke-width="12" 
+                        fill="transparent" 
+                        r="88" 
+                        cx="100" 
+                        cy="100"
+                        stroke-dasharray="{{ progresso_percentual|floatformat:1 }}, 100"
+                        style="stroke-dasharray: calc({{ progresso_percentual }} * 552.64 / 100) 552.64;"/>
+            </svg>
+            <div class="progress-text">
+                <div class="progress-percentage">{{ progresso_percentual|floatformat:1 }}%</div>
+                <div class="progress-label">Concluído</div>
+            </div>
+        </div>
+        
+        <div class="progress-details">
+            <div class="detail-card">
+                <div class="detail-valor">R$ {{ meta.valor_atual|floatformat:2 }}</div>
+                <div class="detail-label">Valor Atual</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-valor">R$ {{ meta.valor_objetivo|floatformat:2 }}</div>
+                <div class="detail-label">Valor Objetivo</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-valor">R$ {{ meta.valor_restante|floatformat:2 }}</div>
+                <div class="detail-label">Falta Alcançar</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- INSIGHTS DA IA -->
+    {% if sugestoes_ia %}
+    <div class="insights-section">
+        <div class="insights-header">
+            🤖 Insights da IA para sua Meta
+        </div>
+        <div class="insights-content">
+            {% for sugestao in sugestoes_ia %}
+            <div class="insight-item">
+                <div class="insight-icon">{{ sugestao.icone }}</div>
+                <div class="insight-content">
+                    <h4 class="insight-titulo">{{ sugestao.titulo }}</h4>
+                    <p class="insight-descricao">{{ sugestao.descricao }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- ADICIONAR PROGRESSO -->
+    {% if meta.status == 'ativa' %}
+    <div class="adicionar-progresso">
+        <div class="progresso-header">
+            <h3 class="progresso-titulo">💰 Adicionar Progresso</h3>
+        </div>
+        
+        <form method="post" class="progresso-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.valor.id_for_label }}">{{ form.valor.label }}</label>
+                {{ form.valor }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+                {{ form.descricao }}
+            </div>
+            
+            <button type="submit" class="btn-adicionar">
+                ➕ Adicionar
+            </button>
+        </form>
+    </div>
+    {% endif %}
+    
+    <!-- AÇÕES DA META -->
+    <div class="meta-actions">
+        <a href="{% url 'editar_meta' meta.id %}" class="btn-action btn-editar">
+            ✏️ Editar
+        </a>
+        <a href="{% url 'pausar_meta' meta.id %}" class="btn-action btn-pausar">
+            {% if meta.status == 'ativa' %}⏸️ Pausar{% else %}▶️ Ativar{% endif %}
+        </a>
+        <a href="{% url 'excluir_meta' meta.id %}" class="btn-action btn-excluir">
+            🗑️ Excluir
+        </a>
+        <a href="{% url 'metas_dashboard' %}" class="btn-action btn-voltar">
+            ← Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -300,6 +300,24 @@
         --card-color: #f44336;
         --card-color-light: #e57373;
     }
+
+    .card-metas {
+    --card-color: #9c27b0;
+    --card-color-light: #ba68c8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    }
+
+    .card-metas:hover {
+        transform: translateY(-10px) scale(1.02);
+    }
+
+    .card-metas a {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .metas { color: #9c27b0; }
     
     .card-saldo {
         --card-color: #2196f3;
@@ -660,6 +678,15 @@
         <div class="valor saldo {% if saldo < 0 %}negativo{% endif %}">
             R$ {{ saldo|floatformat:2 }}
         </div>
+    </div>
+    <div class="card card-metas">
+        <h3>🎯 Minhas Metas</h3>
+        <div class="valor metas">
+            <a href="{% url 'metas_dashboard' %}" style="text-decoration: none; color: inherit;">
+                Ver Metas
+            </a>
+        </div>
+        <small>Defina e acompanhe objetivos</small>
     </div>
 </div>
 

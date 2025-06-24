@@ -1,0 +1,353 @@
+{% extends 'finance/base.html' %}
+
+{% block title %}Confirmar Exclusão - Sistema Financeiro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .delete-header h2 {
+        color: #f44336;
+        font-size: 2.2em;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+    
+    .delete-header p {
+        color: #666;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+    }
+    
+    .meta-details {
+        background: #fff3f3;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+        border-left: 5px solid #f44336;
+    }
+    
+    .meta-details h4 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #ffe6e6;
+    }
+    
+    .detail-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .detail-label {
+        color: #666;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    
+    .detail-value {
+        color: #333;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    
+    .valor-destaque {
+        font-size: 1.3em;
+        color: #f44336;
+    }
+    
+    .progress-info {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+        border-left: 4px solid #2196f3;
+    }
+    
+    .progress-bar-container {
+        background: #e0e0e0;
+        border-radius: 10px;
+        height: 8px;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #66bb6a);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .warning-message {
+        background: #fff3cd;
+        color: #856404;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 25px 0;
+        border-left: 5px solid #ffc107;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    
+    .impact-warning {
+        background: #ffebee;
+        color: #c62828;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+        border-left: 5px solid #f44336;
+    }
+    
+    .impact-title {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    
+    .impact-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .impact-list li {
+        margin: 8px 0;
+        padding: 5px 0;
+        border-bottom: 1px solid #ffcdd2;
+    }
+    
+    .impact-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 35px;
+    }
+    
+    .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        min-width: 150px;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .meta-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+    
+    /* TEMA ESCURO */
+    body.dark-theme .delete-container {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .delete-header p {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .meta-details {
+        background: #3a2828 !important;
+        border-left-color: #f44336 !important;
+    }
+    
+    body.dark-theme .meta-details h4,
+    body.dark-theme .detail-value {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-theme .detail-label {
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-theme .detail-item {
+        border-bottom-color: #4a3333 !important;
+    }
+    
+    body.dark-theme .progress-info {
+        background: #3a3a52 !important;
+        border-left-color: #2196f3 !important;
+    }
+    
+    body.dark-theme .warning-message {
+        background: #4a4a2a !important;
+        color: #e6d700 !important;
+        border-left-color: #ffc107 !important;
+    }
+    
+    body.dark-theme .impact-warning {
+        background: #4a2828 !important;
+        color: #ffcdd2 !important;
+        border-left-color: #f44336 !important;
+    }
+    
+    body.dark-theme .impact-list li {
+        border-bottom-color: #5a3333 !important;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .delete-container {
+            margin: 0 10px;
+            padding: 25px 20px;
+        }
+        
+        .delete-header h2 {
+            font-size: 1.8em;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .btn {
+            min-width: 100%;
+        }
+        
+        .detail-item {
+            flex-direction: column;
+            text-align: left;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        
+        .meta-details {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-header">
+        <div class="meta-icon">🗑️</div>
+        <h2>Confirmar Exclusão</h2>
+        <p>Tem certeza que deseja excluir esta meta permanentemente?</p>
+    </div>
+    
+    <div class="meta-details">
+        <h4>📋 Meta a ser excluída:</h4>
+        
+        <div class="detail-item">
+            <span class="detail-label">📝 Título:</span>
+            <span class="detail-value">{{ meta.titulo }}</span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">💰 Valor Objetivo:</span>
+            <span class="detail-value valor-destaque">R$ {{ meta.valor_objetivo|floatformat:2 }}</span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">💸 Valor Atual:</span>
+            <span class="detail-value">R$ {{ meta.valor_atual|floatformat:2 }}</span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">📂 Tipo:</span>
+            <span class="detail-value">{{ meta.get_tipo_display }}</span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">📅 Data Limite:</span>
+            <span class="detail-value">{{ meta.data_prazo|date:"d/m/Y" }}</span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">🎯 Status:</span>
+            <span class="detail-value">{{ meta.get_status_display }}</span>
+        </div>
+        
+        <!-- Progresso Visual -->
+        <div class="progress-info">
+            <strong>📊 Progresso Atual: {{ meta.percentual_concluido|floatformat:1 }}%</strong>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{ meta.percentual_concluido }}%"></div>
+            </div>
+            <small>Você já alcançou R$ {{ meta.valor_atual|floatformat:2 }} dos R$ {{ meta.valor_objetivo|floatformat:2 }}</small>
+        </div>
+    </div>
+    
+    <!-- Aviso sobre o impacto -->
+    <div class="impact-warning">
+        <div class="impact-title">⚠️ Ao excluir esta meta, você perderá:</div>
+        <ul class="impact-list">
+            <li>📊 Todo o histórico de progresso da meta</li>
+            <li>🤖 Insights e sugestões da IA relacionados</li>
+            <li>📈 Dados de acompanhamento e estatísticas</li>
+            <li>🏆 Conquistas relacionadas a esta meta</li>
+        </ul>
+    </div>
+    
+    <div class="warning-message">
+        ⚠️ Esta ação não pode ser desfeita!
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn btn-danger">
+                🗑️ Sim, Excluir Permanentemente
+            </button>
+            <a href="{% url 'detalhes_meta' meta.id %}" class="btn btn-secondary">
+                ❌ Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

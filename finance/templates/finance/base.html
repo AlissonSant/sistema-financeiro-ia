@@ -188,9 +188,9 @@
             </a>
             <div class="navbar-nav">
                 <span class="nav-link">Olá, {{ user.first_name|default:user.username }}!</span>
+                <a href="{% url 'dashboard' %}" class="nav-link">🏠 Dashboard</a>
+                <a href="{% url 'metas_dashboard' %}" class="nav-link">🎯 Metas</a>
                 <a href="{% url 'logout' %}" class="nav-link">🚪 Sair</a>
-                <button id="themeToggle" class="theme-toggle">
-                    <span class="theme-icon">🌙</span>
                 </button>
             </div>
         </div>

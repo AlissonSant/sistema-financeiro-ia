@@ -13,6 +13,9 @@ Dashboard com controle completo de receitas e despesas, interface moderna e resp
 - [✅] **Painel Administrativo** - Interface completa para gerenciar dados
 - [✅] **Design Responsivo** - Funciona em desktop e mobile
 - [✅] **Categorização** - Organize gastos por categoria (alimentação, transporte, etc.)
+- [✅] **Gráficos interativos**
+- [✅] **Relatórios em PDF**
+- [✅] **Integração com IA para insights**
 
 ## 🛠️ Tecnologias
 
@@ -77,9 +80,6 @@ python manage.py runserver
 
 ## 🎯 Próximas funcionalidades
 
-- [ ] Gráficos interativos
-- [ ] Relatórios em PDF
-- [ ] Integração com IA para insights
 - [ ] API REST
 - [ ] Importação de extratos bancários
 

@@ -136,3 +136,18 @@ CSRF_TRUSTED_ORIGINS = [
     'https://web-production-10330.up.railway.app',
     'https://*.railway.app',
 ]
+
+# PWA - Static Files Configuration
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Adicionar pasta static
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# PWA - Permitir manifest.json
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]

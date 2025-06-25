@@ -1,9 +1,209 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema Financeiro com IA{% endblock %}</title>
+    <title>{% block title %}FLUX FINANCE - IA Preditiva{% endblock %}</title>
+
+    <!-- PWA - Progressive Web App -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <!-- Meta tags para PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FLUX FINANCE">
+    <meta name="application-name" content="FLUX FINANCE">
+    <meta name="msapplication-TileColor" content="#00d4ff">
+    <meta name="theme-color" content="#00d4ff">
+
+    <!-- Ícones para PWA -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="144x144" href="{% static 'images/icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/icon-72x72.png' %}">
+
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="{% static 'images/icon-144x144.png' %}">
+
+    <!-- PWA Scripts -->
+    <script>
+    // PWA - Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/sw.js')
+            .then(registration => {
+                console.log('⚡ FLUX PWA: Service Worker registrado!', registration.scope);
+                
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateAvailable();
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.log('❌ FLUX PWA: Erro ao registrar Service Worker:', error);
+            });
+        });
+    }
+
+    // PWA - Prompt de instalação NEXUS
+    let deferredPrompt;
+    let installButton;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('⚡ FLUX PWA: Prompt de instalação disponível');
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallButton();
+    });
+
+    function showInstallButton() {
+        if (!installButton) {
+            installButton = document.createElement('button');
+            installButton.innerHTML = '⚡ Instalar FLUX';
+            installButton.className = 'flux-install-btn';
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #00d4ff 0%, #5b42f3 50%, #8b00ff 100%);
+                color: white;
+                border: none;
+                padding: 15px 25px;
+                border-radius: 30px;
+                font-weight: bold;
+                box-shadow: 0 8px 25px rgba(0,212,255,0.4);
+                cursor: pointer;
+                z-index: 1000;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            `;
+            
+            installButton.addEventListener('mouseenter', () => {
+                installButton.style.transform = 'translateY(-3px) scale(1.05)';
+                installButton.style.boxShadow = '0 12px 35px rgba(0,212,255,0.5)';
+            });
+            
+            installButton.addEventListener('mouseleave', () => {
+                installButton.style.transform = 'translateY(0) scale(1)';
+                installButton.style.boxShadow = '0 8px 25px rgba(0,212,255,0.4)';
+            });
+            
+            installButton.addEventListener('click', installPWA);
+            document.body.appendChild(installButton);
+        }
+        installButton.style.display = 'block';
+    }
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((result) => {
+                if (result.outcome === 'accepted') {
+                    console.log('🎉 FLUX PWA: Usuário instalou o app!');
+                    showInstallSuccess();
+                } else {
+                    console.log('😔 FLUX PWA: Usuário recusou instalação');
+                }
+                deferredPrompt = null;
+                hideInstallButton();
+            });
+        }
+    }
+
+    function hideInstallButton() {
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+    }
+
+    function showInstallSuccess() {
+        const successMsg = document.createElement('div');
+        successMsg.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #00d4ff, #5b42f3);
+                color: white;
+                padding: 30px 40px;
+                border-radius: 20px;
+                box-shadow: 0 20px 50px rgba(0,212,255,0.3);
+                z-index: 1001;
+                text-align: center;
+                font-weight: bold;
+                font-size: 18px;
+            ">
+                ⚡ FLUX FINANCE INSTALADO! ⚡<br>
+                <div style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+                    Sua IA Financeira agora funciona offline!
+                </div>
+            </div>
+        `;
+        document.body.appendChild(successMsg);
+        setTimeout(() => successMsg.remove(), 4000);
+    }
+
+    function showUpdateAvailable() {
+        const updateMsg = document.createElement('div');
+        updateMsg.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #ff9800, #f57c00);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(255,152,0,0.3);
+                z-index: 1001;
+                text-align: center;
+                font-weight: bold;
+            ">
+                🔄 Nova versão do FLUX disponível!<br>
+                <button onclick="window.location.reload()" style="
+                    background: white;
+                    color: #ff9800;
+                    border: none;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    margin-top: 10px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                ">
+                    Atualizar Agora
+                </button>
+            </div>
+        `;
+        document.body.appendChild(updateMsg);
+    }
+
+    // PWA - Detecta instalação
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('🎉 FLUX PWA: App foi instalado!');
+        hideInstallButton();
+    });
+
+    // PWA - Detecta modo standalone
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('⚡ FLUX PWA: Rodando em modo app instalado');
+        hideInstallButton();
+        document.documentElement.classList.add('flux-installed');
+    }
+    </script>
+
+    <!-- NEXUS Finance CSS -->
     <style>
         * {
             margin: 0;
@@ -13,57 +213,61 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             transition: all 0.3s ease;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de partículas de fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.3" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
         }
         
-        /* TEMA ESCURO */
-        body.dark-theme {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        /* TEMA CLARO - FLUX Style */
+        body.light-theme {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
         }
         
-        body.dark-theme .card,
-        body.dark-theme .auth-container,
-        body.dark-theme .header,
-        body.dark-theme .nova-transacao,
-        body.dark-theme .transacoes {
-            background: #2d2d44;
-            color: #e0e0e0;
-        }
-        
-        body.dark-theme .form-control {
-            background: #3a3a52;
-            border-color: #4a4a65;
-            color: #e0e0e0;
-        }
-        
-        body.dark-theme .form-control:focus {
-            background: #4a4a65;
-            border-color: #667eea;
-        }
-        
-        body.dark-theme .transacao-item:hover {
-            background-color: #3a3a52;
-        }
-        
-        body.dark-theme .transacoes-header {
-            background: linear-gradient(135deg, #4a4a65 0%, #5a5a7a 100%);
+        body.light-theme .card,
+        body.light-theme .auth-container,
+        body.light-theme .header,
+        body.light-theme .nova-transacao,
+        body.light-theme .transacoes {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            backdrop-filter: blur(10px);
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px 10px;
+            position: relative;
+            z-index: 1;
         }
         
-        /* NAVBAR */
+        /* FLUX NAVBAR */
         .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(0,212,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,212,255,0.2);
             padding: 15px 0;
             margin-bottom: 30px;
-            border-radius: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,212,255,0.1);
         }
         
         .navbar-content {
@@ -76,10 +280,22 @@
         }
         
         .navbar-brand {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: white;
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #5b42f3, #8b00ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
+            animation: fluxGradient 3s ease infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes fluxGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .navbar-nav {
@@ -89,38 +305,44 @@
         }
         
         .nav-link {
-            color: white;
+            color: #00d4ff;
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid transparent;
         }
         
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0,212,255,0.1);
+            border-color: rgba(0,212,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,212,255,0.2);
         }
         
         .theme-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
             border-radius: 50px;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: white;
+            color: #00d4ff;
         }
         
         .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+            background: rgba(0,212,255,0.2);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,212,255,0.3);
         }
         
         .theme-icon {
-            font-size: 1.2em;
+            font-size: 1.3em;
             transition: transform 0.3s ease;
         }
         
@@ -128,37 +350,63 @@
             transform: rotate(180deg);
         }
         
-        /* MENSAGENS */
+        /* MENSAGENS FLUX */
         .messages {
             margin-bottom: 20px;
         }
         
         .alert {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-weight: bold;
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-left: 5px solid;
+            backdrop-filter: blur(10px);
         }
         
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 5px solid #28a745;
+            background: rgba(76,175,80,0.1);
+            color: #4caf50;
+            border-left-color: #4caf50;
+            box-shadow: 0 8px 25px rgba(76,175,80,0.1);
         }
         
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid #dc3545;
+            background: rgba(244,67,54,0.1);
+            color: #f44336;
+            border-left-color: #f44336;
+            box-shadow: 0 8px 25px rgba(244,67,54,0.1);
         }
         
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 5px solid #17a2b8;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            border-left-color: #00d4ff;
+            box-shadow: 0 8px 25px rgba(0,212,255,0.1);
+        }
+
+        /* PWA Específico */
+        @media (max-width: 768px) {
+            .flux-install-btn {
+                bottom: 15px !important;
+                right: 15px !important;
+                font-size: 12px !important;
+                padding: 12px 20px !important;
+            }
+        }
+
+        @media (display-mode: standalone) {
+            .flux-install-btn {
+                display: none !important;
+            }
+        }
+
+        /* FLUX instalado */
+        .flux-installed .navbar {
+            background: rgba(0,212,255,0.15);
         }
         
-        /* RESPONSIVIDADE */
+        /* RESPONSIVIDADE FLUX */
         @media (max-width: 768px) {
             .container {
                 padding: 10px 5px;
@@ -174,23 +422,137 @@
                 flex-wrap: wrap;
                 justify-content: center;
             }
+
+            .navbar-brand {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Efeitos adicionais FLUX */
+        .card, .auth-container, .header, .nova-transacao, .transacoes {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* ========================================== */
+        /* CORREÇÃO DOS FORMULÁRIOS - VISIBILIDADE */
+        /* ========================================== */
+        
+        /* Formulários específicos - texto visível */
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="number"], 
+        form input[type="date"],
+        form select,
+        form textarea,
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            color: #333333 !important;
+            background: rgba(255,255,255,0.95) !important;
+            border: 2px solid #00d4ff !important;
+            padding: 12px 16px !important;
+            border-radius: 8px !important;
+            font-weight: 500 !important;
+        }
+
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="password"]:focus,
+        form input[type="number"]:focus,
+        form input[type="date"]:focus, 
+        form select:focus,
+        form textarea:focus,
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            color: #333333 !important;
+            background: #ffffff !important;
+            border-color: #00d4ff !important;
+            box-shadow: 0 0 15px rgba(0,212,255,0.4) !important;
+            outline: none !important;
+        }
+
+        /* Labels dos formulários */
+        form label,
+        .form-group label {
+            color: #00d4ff !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+            display: block !important;
+        }
+
+        /* Placeholders dos formulários */
+        form input::placeholder,
+        form textarea::placeholder,
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999999 !important;
+            font-weight: 400 !important;
+        }
+
+        /* Selects - opções visíveis */
+        form select option,
+        .form-group select option {
+            background: #ffffff !important;
+            color: #333333 !important;
+            padding: 10px !important;
+        }
+
+        /* Botões dos formulários */
+        form .btn,
+        .form-group .btn {
+            padding: 12px 25px !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        form .btn-primary,
+        .form-group .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #5b42f3 50%, #8b00ff 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        form .btn-primary:hover,
+        .form-group .btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0,212,255,0.4) !important;
+        }
+
+        /* TEMA CLARO - formulários mantêm legibilidade */
+        body.light-theme form input,
+        body.light-theme form select,
+        body.light-theme form textarea,
+        body.light-theme .form-group input,
+        body.light-theme .form-group select,
+        body.light-theme .form-group textarea {
+            color: #333333 !important;
+            background: rgba(255,255,255,0.95) !important;
         }
     </style>
     {% block extra_css %}{% endblock %}
+    
 </head>
 <body>
-    <!-- NAVBAR -->
+            <!-- FLUX NAVBAR -->
     {% if user.is_authenticated %}
     <nav class="navbar">
         <div class="navbar-content">
             <a href="{% url 'dashboard' %}" class="navbar-brand">
-                🏦 Sistema Financeiro
+                ⚡ FLUX FINANCE
             </a>
             <div class="navbar-nav">
-                <span class="nav-link">Olá, {{ user.first_name|default:user.username }}!</span>
-                <a href="{% url 'dashboard' %}" class="nav-link">🏠 Dashboard</a>
-                <a href="{% url 'metas_dashboard' %}" class="nav-link">🎯 Metas</a>
+                <span class="nav-link">🧠 Olá, {{ user.first_name|default:user.username }}!</span>
+                <a href="{% url 'dashboard' %}" class="nav-link">📊 Dashboard IA</a>
+                <a href="{% url 'metas_dashboard' %}" class="nav-link">🎯 Preditor</a>
                 <a href="{% url 'logout' %}" class="nav-link">🚪 Sair</a>
+                <button id="themeToggle" class="theme-toggle">
+                    <span class="theme-icon">🌙</span>
                 </button>
             </div>
         </div>
@@ -198,11 +560,11 @@
     {% endif %}
     
     <div class="container">
-        <!-- MENSAGENS -->
+        <!-- MENSAGENS FLUX -->
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }}">⚡ {{ message }}</div>
             {% endfor %}
         </div>
         {% endif %}
@@ -212,7 +574,7 @@
         {% endblock %}
     </div>
     
-    <!-- Script do Modo Escuro -->
+    <!-- Script FLUX Theme -->
     <script>
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
@@ -220,23 +582,25 @@
         if (themeToggle) {
             const themeIcon = document.querySelector('.theme-icon');
             
-            // Verificar se há tema salvo
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.add('dark-theme');
+            // Verificar tema salvo (padrão escuro para FLUX)
+            const savedTheme = localStorage.getItem('flux-theme');
+            if (savedTheme === 'light') {
+                body.classList.add('light-theme');
+                themeIcon.textContent = '🌙';
+            } else {
                 themeIcon.textContent = '☀️';
             }
             
-            // Toggle do tema
+            // Toggle do tema FLUX
             themeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-theme');
+                body.classList.toggle('light-theme');
                 
-                if (body.classList.contains('dark-theme')) {
-                    themeIcon.textContent = '☀️';
-                    localStorage.setItem('theme', 'dark');
-                } else {
+                if (body.classList.contains('light-theme')) {
                     themeIcon.textContent = '🌙';
-                    localStorage.setItem('theme', 'light');
+                    localStorage.setItem('flux-theme', 'light');
+                } else {
+                    themeIcon.textContent = '☀️';
+                    localStorage.setItem('flux-theme', 'dark');
                 }
             });
         }

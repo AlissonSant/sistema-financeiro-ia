@@ -1,0 +1,135 @@
+{
+  "name": "NEXUS FINANCE - IA Preditiva Financeira",
+  "short_name": "NEXUS",
+  "description": "Sua IA Financeira Pessoal - O Futuro das Finanças, Hoje. Previsões precisas, alertas inteligentes e oportunidades automáticas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#00d4ff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["finance", "productivity", "lifestyle", "artificial intelligence"],
+  "screenshots": [
+    {
+      "src": "/static/images/screenshot-mobile.png",
+      "sizes": "640x1136",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/static/images/screenshot-desktop.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/static/images/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-96x96.png",
+      "sizes": "96x96", 
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard IA",
+      "short_name": "Dashboard",
+      "description": "Painel inteligente com previsões",
+      "url": "/dashboard/",
+      "icons": [
+        {
+          "src": "/static/images/icon-144x144.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Preditor de Gastos",
+      "short_name": "Preditor", 
+      "description": "IA prevê seus próximos gastos",
+      "url": "/preditor/",
+      "icons": [
+        {
+          "src": "/static/images/icon-144x144.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Alertas Inteligentes",
+      "short_name": "Alertas",
+      "description": "Notificações preditivas da IA",
+      "url": "/alertas/",
+      "icons": [
+        {
+          "src": "/static/images/icon-144x144.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Oportunidades",
+      "short_name": "Oportunidades",
+      "description": "Sugestões automáticas de investimento",
+      "url": "/oportunidades/",
+      "icons": [
+        {
+          "src": "/static/images/icon-144x144.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

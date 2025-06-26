@@ -284,7 +284,7 @@
             font-weight: 900;
             background: linear-gradient(45deg, #00d4ff, #5b42f3, #8b00ff);
             background-size: 200% 200%;
-            -webkit-background-clip: text;
+            -webkit-background-clip: text;  
             -webkit-text-fill-color: transparent;
             text-decoration: none;
             animation: fluxGradient 3s ease infinite;
@@ -549,7 +549,7 @@
             <div class="navbar-nav">
                 <span class="nav-link">🧠 Olá, {{ user.first_name|default:user.username }}!</span>
                 <a href="{% url 'dashboard' %}" class="nav-link">📊 Dashboard IA</a>
-                <a href="{% url 'metas_dashboard' %}" class="nav-link">🎯 Preditor</a>
+                <a href="{% url 'metas_dashboard' %}" class="nav-link">🎯 Metas</a>
                 <a href="{% url 'logout' %}" class="nav-link">🚪 Sair</a>
                 <button id="themeToggle" class="theme-toggle">
                     <span class="theme-icon">🌙</span>

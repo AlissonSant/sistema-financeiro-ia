@@ -1,4 +1,3 @@
-
 {% extends 'finance/base.html' %}
 {% load static %}
 
@@ -560,6 +559,16 @@
         Gerencie suas finanças com inteligência artificial
     </p>
 </div>
+<div style="background: white; padding: 20px; margin: 10px; border-radius: 10px;">
+    <h3>🔍 DEBUG - Dados dos Gráficos:</h3>
+    <p><strong>Total de categorias:</strong> {{ gastos_categoria|length }}</p>
+    
+    {% for categoria in gastos_categoria %}
+        <p>• {{ categoria.categoria }}: R$ {{ categoria.total }}</p>
+    {% empty %}
+        <p style="color: red;">❌ Nenhum dado encontrado!</p>
+    {% endfor %}
+</div>
 
 <!-- 📊 SEÇÃO DE GRÁFICOS -->
 <div class="graficos-section">
@@ -738,17 +747,19 @@
 <script>
 // Aguarda a página carregar completamente
 document.addEventListener('DOMContentLoaded', function() {
-    // Dados para os gráficos (vindos do Django)
+    console.log('🚀 Iniciando carregamento dos gráficos...');
+    
+    // Dados para os gráficos (vindos do Django) - CORRIGIDO
     const categoriasData = {
         {% if gastos_categoria %}
         labels: [
             {% for categoria in gastos_categoria %}
-            "{{ categoria.categoria|safe }}"{% if not forloop.last %},{% endif %}
+            "{{ categoria.categoria|escapejs }}"{% if not forloop.last %},{% endif %}
             {% endfor %}
         ],
         values: [
             {% for categoria in gastos_categoria %}
-            {{ categoria.total|floatformat:2 }}{% if not forloop.last %},{% endif %}
+            parseFloat("{{ categoria.total }}".replace(',', '.')){% if not forloop.last %},{% endif %}
             {% endfor %}
         ]
         {% else %}
@@ -756,6 +767,11 @@ document.addEventListener('DOMContentLoaded', function() {
         values: [0]
         {% endif %}
     };
+
+    // 🔍 DEBUG - Vamos ver o que chegou
+    console.log('📊 Dados das categorias:', categoriasData);
+    console.log('🏷️ Labels:', categoriasData.labels);
+    console.log('💰 Values:', categoriasData.values);
 
     // Cores vibrantes para os gráficos
     const colors = [
@@ -766,40 +782,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verifica se o elemento existe antes de criar o gráfico
     const categoriasElement = document.getElementById('categoriasChart');
     if (categoriasElement) {
+        console.log('✅ Elemento categoriasChart encontrado!');
         const ctxCategorias = categoriasElement.getContext('2d');
-        new Chart(ctxCategorias, {
-            type: 'doughnut',
-            data: {
-                labels: categoriasData.labels,
-                datasets: [{
-                    data: categoriasData.values,
-                    backgroundColor: colors,
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
+        
+        // Criar gráfico apenas se tiver dados
+        if (categoriasData.values.length > 0 && categoriasData.values[0] > 0) {
+            new Chart(ctxCategorias, {
+                type: 'doughnut',
+                data: {
+                    labels: categoriasData.labels,
+                    datasets: [{
+                        data: categoriasData.values,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log('✅ Gráfico de categorias criado!');
+        } else {
+            console.log('⚠️ Sem dados para o gráfico de categorias');
+            // Mostrar mensagem de "sem dados"
+            ctxCategorias.font = '16px Arial';
+            ctxCategorias.fillStyle = '#666';
+            ctxCategorias.textAlign = 'center';
+            ctxCategorias.fillText('Sem dados disponíveis', 
+                categoriasElement.width/2, categoriasElement.height/2);
+        }
+    } else {
+        console.log('❌ Elemento categoriasChart NÃO encontrado!');
     }
 
     // Gráfico de Barras - Evolução
     const evolucaoElement = document.getElementById('evolucaoChart');
     if (evolucaoElement) {
+        console.log('✅ Elemento evolucaoChart encontrado!');
         const ctxEvolucao = evolucaoElement.getContext('2d');
-        const receitasAtual = {{ receitas|default:0|floatformat:2 }};
-        const despesasAtual = {{ despesas|default:0|floatformat:2 }};
+        
+        // Converter valores para números (sem vírgulas brasileiras)
+        const receitasAtual = parseFloat("{{ receitas }}".replace(',', '.')) || 0;
+        const despesasAtual = parseFloat("{{ despesas }}".replace(',', '.')) || 0;
+        
+        console.log('💰 Receitas:', receitasAtual, 'Despesas:', despesasAtual);
         
         new Chart(ctxEvolucao, {
             type: 'bar',
@@ -833,13 +870,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return 'R$ ' + value.toLocaleString();
+                                return 'R$ ' + value.toLocaleString('pt-BR');
                             }
                         }
                     }
                 }
             }
         });
+        console.log('✅ Gráfico de evolução criado!');
+    } else {
+        console.log('❌ Elemento evolucaoChart NÃO encontrado!');
     }
 });
 </script>

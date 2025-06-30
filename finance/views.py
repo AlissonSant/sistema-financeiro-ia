@@ -54,7 +54,19 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     """Dashboard principal"""
+    gastos_categoria_raw = Transacao.objects.filter(
+        usuario=request.user, 
+        tipo='despesa').values('categoria').annotate(total=Sum('valor')).order_by('-total')
     transacoes = Transacao.objects.filter(usuario=request.user).order_by('-data')
+    
+    gastos_categoria = []
+    for item in gastos_categoria_raw:
+        codigo_categoria = item['categoria']
+        nome_categoria = dict(Transacao.CATEGORIAS)[codigo_categoria]
+        gastos_categoria.append({
+            'categoria': nome_categoria,
+            'total': item['total']
+        })
     
     # Cálculos financeiros
     receitas = Transacao.objects.filter(usuario=request.user, tipo='receita').aggregate(Sum('valor'))['valor__sum'] or 0
@@ -140,20 +152,68 @@ def excluir_transacao(request, transacao_id):
 @login_required
 def metas_dashboard(request):
     """Dashboard principal das metas com alertas inteligentes"""
-    metas = MetaFinanceira.objects.filter(usuario=request.user).order_by('-data_criacao')
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # Buscar metas do usuário
+    metas_raw = MetaFinanceira.objects.filter(usuario=request.user).order_by('-data_criacao')
+    
+    # Processar cada meta para garantir que os dados chegam corretos
+    metas = []
+    for meta in metas_raw:
+        # Calcular percentual manualmente
+        if meta.valor_objetivo > 0:
+            percentual = float((meta.valor_atual / meta.valor_objetivo) * 100)
+        else:
+            percentual = 0
+            
+        # Calcular dias restantes
+        if meta.data_prazo:
+            dias_restantes = max(0, (meta.data_prazo - timezone.now().date()).days)
+        else:
+            dias_restantes = 0
+            
+        # Determinar cor da barra baseado no percentual
+        if percentual >= 75:
+            cor_barra = 'success'
+        elif percentual >= 50:
+            cor_barra = 'info'
+        elif percentual >= 25:
+            cor_barra = 'warning'
+        else:
+            cor_barra = 'danger'
+            
+        # Criar objeto processado
+        meta_processada = {
+            'id': meta.id,
+            'titulo': meta.titulo,
+            'descricao': meta.descricao,
+            'tipo': meta.tipo,
+            'get_tipo_display': meta.get_tipo_display(),
+            'valor_atual': meta.valor_atual,
+            'valor_objetivo': meta.valor_objetivo,
+            'data_prazo': meta.data_prazo,
+            'status': meta.status,
+            'get_status_display': meta.get_status_display(),
+            'percentual_concluido': round(percentual, 1),
+            'dias_restantes': dias_restantes,
+            'status_progresso': {'cor': cor_barra},
+            'meta_original': meta  # Para casos que precisem do objeto original
+        }
+        
+        metas.append(meta_processada)
     
     # Estatísticas
-    total_metas = metas.count()
-    metas_ativas = metas.filter(status='ativa').count()
-    metas_concluidas = metas.filter(status='concluida').count()
-    metas_urgentes = metas.filter(
+    total_metas = metas_raw.count()
+    metas_ativas = metas_raw.filter(status='ativa').count()
+    metas_concluidas = metas_raw.filter(status='concluida').count()
+    metas_urgentes = metas_raw.filter(
         status='ativa',
         data_prazo__lte=timezone.now().date() + timedelta(days=30)
     ).count()
     
-    # 🚨 NOVO: Sistema de alertas inteligentes
-    sistema_alertas = AlertasInteligentes(request.user)
-    alertas = sistema_alertas.gerar_todos_alertas()
+    # Alertas (simplificado por enquanto)
+    alertas = []
     
     context = {
         'metas': metas,
@@ -161,9 +221,9 @@ def metas_dashboard(request):
         'metas_ativas': metas_ativas,
         'metas_concluidas': metas_concluidas,
         'metas_urgentes': metas_urgentes,
-        'alertas': alertas,  # 🆕 NOVO
-        'total_alertas': len(alertas),  # 🆕 NOVO
-        'alertas_urgentes': sistema_alertas.contar_alertas_urgentes(),  # 🆕 NOVO
+        'alertas': alertas,
+        'total_alertas': len(alertas),
+        'alertas_urgentes': 0,
     }
     
     return render(request, 'finance/metas_dashboard.html', context)

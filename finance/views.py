@@ -53,12 +53,68 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    """Dashboard principal"""
+    """Dashboard principal com IA integrada"""
+    from django.utils import timezone
+    from .ai_engine import FluxAIEngine, FluxAIInsights
+    
+    # Buscar metas do usuário
+    metas_raw = MetaFinanceira.objects.filter(usuario=request.user).order_by('-data_criacao')
+    
+    # Processar cada meta para garantir que os dados chegam corretos
+    metas = []
+    for meta in metas_raw:
+        # Calcular percentual manualmente
+        if meta.valor_objetivo > 0:
+            percentual = float((meta.valor_atual / meta.valor_objetivo) * 100)
+        else:
+            percentual = 0
+            
+        # Calcular dias restantes
+        if meta.data_prazo:
+            dias_restantes = max(0, (meta.data_prazo - timezone.now().date()).days)
+        else:
+            dias_restantes = 0
+            
+        # Determinar cor da barra baseado no percentual
+        if percentual >= 75:
+            cor_barra = 'success'
+        elif percentual >= 50:
+            cor_barra = 'info'
+        elif percentual >= 25:
+            cor_barra = 'warning'
+        else:
+            cor_barra = 'danger'
+            
+        # Criar objeto processado
+        meta_processada = {
+            'id': meta.id,
+            'titulo': meta.titulo,
+            'descricao': meta.descricao,
+            'tipo': meta.tipo,
+            'get_tipo_display': meta.get_tipo_display(),
+            'valor_atual': meta.valor_atual,
+            'valor_objetivo': meta.valor_objetivo,
+            'data_prazo': meta.data_prazo,
+            'status': meta.status,
+            'get_status_display': meta.get_status_display(),
+            'percentual_concluido': round(percentual, 1),
+            'dias_restantes': dias_restantes,
+            'status_progresso': {'cor': cor_barra},
+            'meta_original': meta  # Para casos que precisem do objeto original
+        }
+        
+        metas.append(meta_processada)
+    
+    # Buscar transações
+    transacoes_raw = Transacao.objects.filter(usuario=request.user).order_by('-data')
+    
+    # Processar transações para gráficos
     gastos_categoria_raw = Transacao.objects.filter(
         usuario=request.user, 
-        tipo='despesa').values('categoria').annotate(total=Sum('valor')).order_by('-total')
-    transacoes = Transacao.objects.filter(usuario=request.user).order_by('-data')
+        tipo='despesa'
+    ).values('categoria').annotate(total=Sum('valor')).order_by('-total')
     
+    # Converter códigos para nomes bonitos
     gastos_categoria = []
     for item in gastos_categoria_raw:
         codigo_categoria = item['categoria']
@@ -68,16 +124,44 @@ def dashboard(request):
             'total': item['total']
         })
     
-    # Cálculos financeiros
+    # Cálculos financeiros básicos
     receitas = Transacao.objects.filter(usuario=request.user, tipo='receita').aggregate(Sum('valor'))['valor__sum'] or 0
     despesas = Transacao.objects.filter(usuario=request.user, tipo='despesa').aggregate(Sum('valor'))['valor__sum'] or 0
     saldo = receitas - despesas
     
-    # Gastos por categoria para gráfico
-    gastos_categoria = Transacao.objects.filter(
-        usuario=request.user, 
-        tipo='despesa'
-    ).values('categoria').annotate(total=Sum('valor')).order_by('-total')
+    # 🤖 NOVA SEÇÃO: IA INTEGRADA
+    try:
+        print(f"🤖 Inicializando IA para {request.user.username}...")
+        
+        # Inicializar engine de IA
+        ai_engine = FluxAIEngine(request.user)
+        ai_insights = FluxAIInsights(request.user)
+        
+        # Gerar insights para o dashboard
+        insights_ia = ai_insights.get_insights_dashboard()
+        
+        # Análise de padrões completa
+        padroes_gastos = ai_engine.analisar_padroes_gastos()
+        
+        # Previsões futuras
+        previsao_30_dias = ai_engine.prever_gastos_futuros(30)
+        
+        # Score financeiro
+        score_financeiro = ai_engine.calcular_score_financeiro()
+        
+        # Alertas inteligentes
+        alertas_ia = ai_engine.gerar_alertas_inteligentes()
+        
+        print(f"✅ IA processada com sucesso! Score: {score_financeiro['score']}/100")
+        
+    except Exception as e:
+        print(f"❌ Erro na IA: {e}")
+        # Valores padrão em caso de erro
+        insights_ia = []
+        padroes_gastos = {'status': 'erro'}
+        previsao_30_dias = {'status': 'erro'}
+        score_financeiro = {'score': 0, 'classificacao': 'Sem dados', 'cor': 'secondary'}
+        alertas_ia = []
     
     # Formulário para nova transação
     if request.method == 'POST':
@@ -91,25 +175,38 @@ def dashboard(request):
     else:
         form = TransacaoForm()
     
-    # Insights da IA (se disponível)
-    insights = []
-    previsao = None
-    try:
-        ai = FinancialInsights(request.user)
-        insights = ai.get_insights()
-        previsao = ai.get_previsao_mensal()
-    except:
-        pass
+    # Preparar dados de previsão para o template
+    previsao_template = None
+    if previsao_30_dias['status'] == 'sucesso':
+        previsao_template = {
+            'previsao_total': previsao_30_dias['previsao_total'],
+            'gasto_atual': despesas,
+            'dias_restantes': 30 - timezone.now().date().day,  # Dias restantes do mês
+            'media_diaria': previsao_30_dias['media_diaria_historica'],
+            'tendencia': previsao_30_dias['tendencia_percentual']
+        }
     
     context = {
-        'transacoes': transacoes,
+        # Dados básicos (já existiam)
+        'transacoes': transacoes_raw,
         'form': form,
         'receitas': receitas,
         'despesas': despesas,
         'saldo': saldo,
         'gastos_categoria': gastos_categoria,
-        'insights': insights,
-        'previsao': previsao,
+        'metas': metas,
+        
+        # 🤖 NOVOS DADOS DA IA
+        'insights_ia': insights_ia,
+        'padroes_gastos': padroes_gastos,
+        'previsao': previsao_template,
+        'score_financeiro': score_financeiro,
+        'alertas_ia': alertas_ia,
+        
+        # Estatísticas da IA para cards
+        'ai_ativo': True,
+        'total_insights': len(insights_ia),
+        'total_alertas': len(alertas_ia),
     }
     
     return render(request, 'finance/dashboard.html', context)

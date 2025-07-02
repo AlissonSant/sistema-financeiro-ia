@@ -533,6 +533,25 @@
         color: #f44336 !important;
     }
     
+    /* 📊 TEMA ESCURO - CORRIGIR CORES DA IA */
+    body.dark-theme .ia-section h2,
+    body.dark-theme .ia-section h4 {
+        color: #e0e0e0 !important;
+    }
+
+    body.dark-theme .ia-section > div > div {
+        background: #2d2d44 !important;
+        color: #e0e0e0 !important;
+    }
+
+    body.dark-theme .ia-section p {
+        color: #b0b0b0 !important;
+    }
+
+    body.dark-theme .ia-section div[style*="color: #888"] {
+        color: #888 !important;
+    }
+    
     /* RESPONSIVIDADE */
     @media (max-width: 768px) {
         .graficos-grid {
@@ -559,16 +578,6 @@
         Gerencie suas finanças com inteligência artificial
     </p>
 </div>
-<div style="background: white; padding: 20px; margin: 10px; border-radius: 10px;">
-    <h3>🔍 DEBUG - Dados dos Gráficos:</h3>
-    <p><strong>Total de categorias:</strong> {{ gastos_categoria|length }}</p>
-    
-    {% for categoria in gastos_categoria %}
-        <p>• {{ categoria.categoria }}: R$ {{ categoria.total }}</p>
-    {% empty %}
-        <p style="color: red;">❌ Nenhum dado encontrado!</p>
-    {% endfor %}
-</div>
 
 <!-- 📊 SEÇÃO DE GRÁFICOS -->
 <div class="graficos-section">
@@ -591,23 +600,105 @@
     </div>
 </div>
 
-<!-- 🤖 SEÇÃO DE INSIGHTS IA -->
-{% if insights %}
-<div class="insights-section">
-    <div class="insights-header">
-        <h2 class="insights-title">🤖 Insights Inteligentes</h2>
+<!-- 🤖 SEÇÃO DE IA INTELIGENTE -->
+{% if ai_ativo %}
+<div class="ia-section" style="margin-bottom: 30px;">
+    <div class="ia-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 1.5em; color: #333; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+            🤖 Análise Inteligente
+            {% if score_financeiro.score %}
+            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8em;">
+                Score: {{ score_financeiro.score }}/100
+            </span>
+            {% endif %}
+        </h2>
     </div>
-    <div class="insights-grid">
-        {% for insight in insights %}
-        <div class="insight-card insight-{{ insight.tipo }}">
-            <div class="insight-header">
-                <span class="insight-icon">{{ insight.icone }}</span>
-                <h4 class="insight-titulo">{{ insight.titulo }}</h4>
+    
+    <!-- Grid de Insights da IA -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+        
+        <!-- Score Financeiro -->
+        {% if score_financeiro.score %}
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #667eea;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 1.5em; margin-right: 10px;">📊</span>
+                <h4 style="font-weight: bold; color: #333; font-size: 1.1em;">Score Financeiro</h4>
             </div>
-            <p class="insight-descricao">{{ insight.descricao }}</p>
-            <p class="insight-dica">💡 {{ insight.dica }}</p>
+            <div style="font-size: 2em; font-weight: bold; color: #667eea; margin-bottom: 5px;">
+                {{ score_financeiro.score }}/100
+            </div>
+            <p style="color: #666; margin-bottom: 8px;">{{ score_financeiro.classificacao }}</p>
+            {% if score_financeiro.detalhes %}
+                <div style="font-size: 0.9em; color: #888;">
+                    {{ score_financeiro.detalhes.0 }}
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
+        {% endif %}
+        
+        <!-- Padrões de Gastos -->
+        {% if padroes_gastos.status == 'sucesso' %}
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #4caf50;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 1.5em; margin-right: 10px;">📈</span>
+                <h4 style="font-weight: bold; color: #333; font-size: 1.1em;">Padrão Detectado</h4>
+            </div>
+            <div style="font-size: 1.3em; font-weight: bold; color: #4caf50; margin-bottom: 5px;">
+                {{ padroes_gastos.categoria_principal.nome }}
+            </div>
+            <p style="color: #666; margin-bottom: 8px;">
+                {{ padroes_gastos.categoria_principal.percentual|floatformat:1 }}% dos seus gastos
+            </p>
+            <div style="font-size: 0.9em; color: #888;">
+                Média: R$ {{ padroes_gastos.media_diaria|floatformat:2 }}/dia
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Previsão -->
+        {% if previsao %}
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #ff9800;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 1.5em; margin-right: 10px;">🔮</span>
+                <h4 style="font-weight: bold; color: #333; font-size: 1.1em;">Previsão 30 Dias</h4>
+            </div>
+            <div style="font-size: 1.3em; font-weight: bold; color: #ff9800; margin-bottom: 5px;">
+                R$ {{ previsao.previsao_total|floatformat:2 }}
+            </div>
+            <p style="color: #666; margin-bottom: 8px;">Baseado nos seus padrões</p>
+            {% if previsao.tendencia > 10 %}
+                <div style="font-size: 0.9em; color: #f44336;">
+                    ⚠️ Gastos em alta: +{{ previsao.tendencia|floatformat:1 }}%
+                </div>
+            {% elif previsao.tendencia < -10 %}
+                <div style="font-size: 0.9em; color: #4caf50;">
+                    ✅ Economia detectada: {{ previsao.tendencia|floatformat:1 }}%
+                </div>
+            {% else %}
+                <div style="font-size: 0.9em; color: #888;">
+                    📊 Gastos estáveis
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Alertas Resumo -->
+        {% if total_alertas > 0 %}
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #f44336;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 1.5em; margin-right: 10px;">🚨</span>
+                <h4 style="font-weight: bold; color: #333; font-size: 1.1em;">Alertas Ativos</h4>
+            </div>
+            <div style="font-size: 1.3em; font-weight: bold; color: #f44336; margin-bottom: 5px;">
+                {{ total_alertas }} alerta{{ total_alertas|pluralize }}
+            </div>
+            <p style="color: #666; margin-bottom: 8px;">{{ alertas_ia.0.titulo }}</p>
+            <div style="font-size: 0.9em; color: #888;">
+                💡 {{ alertas_ia.0.acao|truncatewords:8 }}
+            </div>
+        </div>
+        {% endif %}
+        
     </div>
 </div>
 {% endif %}
